@@ -9,6 +9,9 @@ from telebot.types import InputFile
 import log_utils
 
 
+# Типо разработки DEBUG / PROD
+WORK_TYPE = "PROD"
+
 # получение настроек
 
 
@@ -20,9 +23,9 @@ def getOpenAiToken():
 
 
 def getTgbotToken():
-    f = open(TGBOT_TOKEN_PATH, "r")
     bottoken = f.readlines()
     f.close()
+
     return bottoken[0]
 
 
