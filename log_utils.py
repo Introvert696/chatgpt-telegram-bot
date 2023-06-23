@@ -9,7 +9,7 @@ def createDb():
         connection = sqlite3.connect(PATH_TO_DB)
         cursor = connection.cursor()
         create_table_sql = '''
-        create table log (
+        create table if not exists log (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             type TEXT NOT NULL,
             username TEXT,

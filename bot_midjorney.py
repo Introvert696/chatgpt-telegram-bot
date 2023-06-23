@@ -9,9 +9,6 @@ from telebot.types import InputFile
 import log_utils
 import replicate
 
-# Типо разработки DEBUG / PROD
-WORK_TYPE = "PROD"
-
 
 # получение настроек
 
@@ -27,10 +24,7 @@ def getTgbotToken():
     f = open(TGBOT_TOKEN_PATH, "r")
     bottoken = f.readlines()
     f.close()
-    if WORK_TYPE == "DEBUG":
-        return bottoken[1]
-    elif WORK_TYPE == "PROD":
-        return bottoken[0]
+    return bottoken[0]
 
 
 def getAdminList():
@@ -48,12 +42,12 @@ def getMidjorneyToken():
 
 
 # константы путей до файлов
-WHITE_LIST_PATH = "cfg/whitelist.txt"
-LOG_DB_PATH = "log/log.db"
-ADMIN_LIST_PATH = "cfg/adminlist.txt"
-OPENAI_TOKEN_PATH = "cfg/openaitoken.txt"
-TGBOT_TOKEN_PATH = "cfg/tgbottoken.txt"
-MIDJORNEY_TOKEN_PATH = "cfg/midjorney.txt"
+WHITE_LIST_PATH = "/home/tgbot/cfg/whitelist.txt"
+LOG_DB_PATH = "/home/tgbot/log/log.db"
+ADMIN_LIST_PATH = "/home/tgbot/cfg/adminlist.txt"
+OPENAI_TOKEN_PATH = "/home/tgbot/cfg/openaitoken.txt"
+TGBOT_TOKEN_PATH = "/home/tgbot/cfg/tgbottoken.txt"
+MIDJORNEY_TOKEN_PATH = "/home/tgbot/cfg/midjorney.txt"
 
 # Устновка переменной
 os.environ["REPLICATE_API_TOKEN"] = getMidjorneyToken()

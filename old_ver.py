@@ -23,7 +23,6 @@ def getTgbotToken():
     f = open(TGBOT_TOKEN_PATH, "r")
     bottoken = f.readlines()
     f.close()
-
     return bottoken[0]
 
 
@@ -40,13 +39,11 @@ LOG_DB_PATH = "log/log.db"
 ADMIN_LIST_PATH = "cfg/adminlist.txt"
 OPENAI_TOKEN_PATH = "cfg/openaitoken.txt"
 TGBOT_TOKEN_PATH = "cfg/tgbottoken.txt"
-MIDJORNEY_TOKEN_PATH = "cfg/midjorney.txt"
 
 # присвойка токенов
 openai_token = getOpenAiToken()
 admin_list = getAdminList()
 telgram_bot_token = getTgbotToken()
-
 
 welcome_message = "Привет, это Бот ChatGPT. Здесь вы можете задать любой вопрос и получить на него ответ. Так же вы можете сгенерировать картику командой /image (текст запроса) . "
 message_for_not_white_list_users = " . Вас нету в вайтлисте, обратитесь к https://t.me/Bojlodya чтобы получить доступ"
