@@ -7,6 +7,10 @@
 ```bash
 pip install openai
 ```
+- telebot
+```bash
+pip install telebot
+```
 После нужно будет вписать данные для бота, которые находятся в папке cfg:
 - adminlist.txt - сюда вписываем свой id телеграма
 - midjorney.txt - сюда ключ от миджорней (можно не писать, я не сделал его)
