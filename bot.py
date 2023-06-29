@@ -30,9 +30,14 @@ def getTgbotToken():
 def getAdminList():
     f = open(ADMIN_LIST_PATH, "r")
     adminlist = f.readlines()
+    adminlistnew = [elem.strip() for elem in adminlist]
+    print(adminlistnew)
     f.close()
     return adminlist
 
+
+# создание бд
+log_utils.createDb()
 
 # константы путей до файлов
 WHITE_LIST_PATH = "cfg/whitelist.txt"
@@ -87,7 +92,8 @@ def generate_image(prompt):
 
 def white_list_protected(user_id):
     f = open(WHITE_LIST_PATH, "r")
-    whitelist = f.readlines()
+    wl = f.readlines()
+    whitelist = [elem.strip() for elem in wl]
     f.close()
     for i in range(whitelist.__len__()):
         # print()
@@ -99,14 +105,17 @@ def white_list_protected(user_id):
 # отправка файла лога
 @bot.message_handler(commands=['log'])
 def command_message(message):
-
-    if message.from_user.id in admin_list:
+    print(type(str(message.from_user.id)))
+    print(type(admin_list[1]))
+    print(str(message.from_user.id) == admin_list[1])
+    if str(message.from_user.id) in admin_list:
 
         log_utils.inlog("Запрос лога", message.from_user.username,
                         message.from_user.id, message.text)
         bot.send_document(message.from_user.id, InputFile(LOG_DB_PATH))
 
-        log_utils.inlog("Отправка лога", "SERVER", 0, "Файл успешно отправлен")
+        log_utils.inlog("Отправка лога", "SERVER",
+                        0, "Файл успешно отправлен")
     else:
         bot.send_message(
             message.from_user.id, "Ура, вы нашли команду лога =-), молодец, но увы, вы не админ =-(! ")
@@ -117,10 +126,11 @@ def command_message(message):
 
 @bot.message_handler(commands=['anonc'])
 def command_message(message):
-    if message.from_user.id in admin_list:
+    if str(message.from_user.id) in admin_list:
 
         f = open(WHITE_LIST_PATH, "r")
-        whitelist = f.readlines()
+        wl = f.readlines()
+        whitelist = [elem.strip() for elem in wl]
         f.close()
         content = message.text.replace("/anonc ", "")
 
@@ -145,7 +155,7 @@ def send_welcome(message):
 
 @bot.message_handler(commands=["adduser"])
 def command_message(message):
-    if message.from_user.id in admin_list:
+    if str(message.from_user.id) in admin_list:
         f = open(WHITE_LIST_PATH, "a")
         userid = re.search("[0-9]+", message.text)
         f.write(str(userid[0]) + "\n")
@@ -163,53 +173,55 @@ def command_message(message):
 # удаление пользователя из вайтлиста (для админов)
 @bot.message_handler(commands=["deleteuser"])
 def command_message(message):
-    f = open(WHITE_LIST_PATH, "r+")
-    users = f.readlines()
-    user_for_delete = re.search("[0-9]+", message.text)
+    if str(message.from_user.id) in admin_list:
+        f = open(WHITE_LIST_PATH, "r+")
+        users = f.readlines()
+        user_for_delete = re.search("[0-9]+", message.text)
 
-    try:
-        user_index = users.index(str(user_for_delete[0]) + "\n")
-        users.pop(user_index)
-        f.seek(0)
-        f.truncate()
-        for i in range(len(users)):
-            users[i] = users[i].strip()
-            if (str(users[i]) != "\n"):
-                f.write(str(users[i])+"\n")
+        try:
+            user_index = users.index(str(user_for_delete[0]) + "\n")
+            users.pop(user_index)
+            f.seek(0)
+            f.truncate()
+            for i in range(len(users)):
+                users[i] = users[i].strip()
+                if (str(users[i]) != "\n"):
+                    f.write(str(users[i])+"\n")
 
-        bot.reply_to(message, "Кентик удален")
-        log_utils.inlog("Удаление из Whitelist", message.from_user.username,
-                        message.from_user.id, message.text)
+            bot.reply_to(message, "Кентик удален")
+            log_utils.inlog("Удаление из Whitelist", message.from_user.username,
+                            message.from_user.id, message.text)
 
-    except Exception as ex:
-        bot.reply_to(message, "Кентик не найден")
+        except Exception as ex:
+            bot.reply_to(message, "Кентик не найден")
 
-        log_utils.inlog("Удаление из Whitelist", message.from_user.username,
-                        message.from_user.id, "Ошибка удаления из whitelist, подробнее - "+str(ex))
-    f.close()
+            log_utils.inlog("Удаление из Whitelist", message.from_user.username,
+                            message.from_user.id, "Ошибка удаления из whitelist, подробнее - "+str(ex))
+        f.close()
 
 
 # генерация фоток
 
 
-@bot.message_handler(commands=['image'])
-def command_message(message):
-    protect = white_list_protected(message.from_user.id)
+# @bot.message_handler(commands=['image'])
+# def command_message(message):
+#     protect = white_list_protected(message.from_user.id)
 
-    if (protect):
-        log_utils.inlog("Генерация фото", message.from_user.username,
-                        message.from_user.id, message.text)
-        prompt = message.text
-        image = generate_image(prompt)
-        bot.reply_to(message, text=image)
+#     if (protect):
+#         log_utils.inlog("Генерация фото", message.from_user.username,
+#                         message.from_user.id, message.text)
+#         prompt = message.text
+#         image = generate_image(prompt)
+#         bot.reply_to(message, text=image)
 
-        log_utils.inlog("Генерация фото", "SERVER",
-                        0, "Фото успешно сгенерено пользователю - "+str(message.from_user.id))
+#         log_utils.inlog("Генерация фото", "SERVER",
+#                         0, "Фото успешно сгенерено пользователю - "+str(message.from_user.id))
 
-    else:
+#     else:
 
-        log_utils.inlog("ERROR", "SERVER", 0, "Пользователь не в whitelist-e")
-        bot.reply_to(message, text=message_for_not_white_list_users)
+#         log_utils.inlog("ERROR", "SERVER", 0,
+#                         "Пользователь не в whitelist-e")
+#         bot.reply_to(message, text=message_for_not_white_list_users)
 
 # обработка сообщений
 
@@ -238,7 +250,8 @@ if __name__ == "__main__":
     while True:
         try:
             print('ChatGPT Telegram bot - is working')
-            log_utils.inlog("BOT START", "SERVER", 0, "Сервер запустился")
+            log_utils.inlog("BOT START", "SERVER", 0,
+                            "Сервер запустился")
             bot.polling()
         except Exception as e:
             print(str(datetime.datetime.now()) +
@@ -246,3 +259,5 @@ if __name__ == "__main__":
 
             log_utils.inlog("ERROR", "SERVER", 0,
                             "Сервер упал, подробнее - "+str(e))
+        if (KeyboardInterrupt()):
+            exit

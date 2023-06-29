@@ -1,2 +1,6 @@
 __pycache__
 cfg
+.vscode
+cfg
+cfg/adminlist.txt
+log
